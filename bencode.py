@@ -1,19 +1,26 @@
+# JSON <-> bencode converter
+
 import sys
 import json
 
+# Recursively python object into bencode format
 def encode(obj):
     to = type(obj)
     if to is str:
+        # encode string
         return str(len(obj)) + ':' + obj
     elif to is int:
+        # encode int
         return 'i' + str(obj) + 'e'
     elif to is list:
+        # encode list
         ret = 'l'
         for li in obj:
             ret += encode(li)
         ret += 'e'
         return ret
     elif to is dict:
+        # encode dictionary
         ret = 'd'
         for dk in obj:
             ret += encode(dk) + encode(obj[dk])
@@ -22,9 +29,11 @@ def encode(obj):
     else:
         raise TypeError('Incompatible type: ' + str(type(obj)))
 
+# Recursively decode bencode string into python object
 def decode(data):
     ret = None
     if data[0] == 'd':
+        # decode dictionary
         data = data[1:]
         ret = {}
         while (data[0] != 'e'):
@@ -33,6 +42,7 @@ def decode(data):
             ret[key] = val
         data = data[1:]
     elif data[0] == 'l':
+        # decode list
         data = data[1:]
         ret = []
         while (data[0] != 'e'):
@@ -40,12 +50,12 @@ def decode(data):
             ret.append(val)
         data = data[1:]
     elif data[0] == 'i':
-        # int decode
+        # decode int
         end = str.find(data, 'e')
         ret = int(data[1:end])
         data = data[end+1:]
     else:
-        # string decode
+        # decode string
         col = str.find(data, ':')
         slen = int(data[0:col])
         end = col+slen+1
