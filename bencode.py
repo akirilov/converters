@@ -60,7 +60,7 @@ def j2b(s_json):
 
 def b2j(s_bcode):
     val,_ =decode(s_bcode)
-    return val
+    return json.dumps(val)
 
 if __name__ == '__main__':
     if sys.argv[1] == 'e':
